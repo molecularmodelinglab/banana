@@ -207,17 +207,7 @@ if __name__ == "__main__":
     # run_id, tag, benchmark, and data_split are all command line args
     # todo: this is a pretty hacky way of getting command line args
     
-    # run_id = cfg.run_id
-    # tag = cfg.tag
-    # benchmark = cfg.benchmark
-    # data_split = "test" if cfg.benchmark == "lit_pcba" else cfg.data_split
-
-    run_id = "37jstv82"
-    tag = "v4"
-    banana, cfg, = get_run_val_model(cfg, run_id, tag)
-    gnina = GninaModel(cfg, dense=True)
-    model = ComboModel(banana, gnina, 0.1)
-
-    benchmark = "lit_pcba"
-    data_split = "test"
-    screen(cfg, model, benchmark, data_split)
+    run_id = cfg.run_id
+    tag = cfg.tag
+    benchmark = cfg.benchmark
+    data_split = "test" if cfg.benchmark == "lit_pcba" else cfg.data_split

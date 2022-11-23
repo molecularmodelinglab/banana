@@ -3,15 +3,15 @@ from validation.validate import validate
 
 def validate_regression(cfg):
     print("Validating Ligand and Receptor on test set")
-    validate(cfg, "34ednh2q", "v4", "test")
+    validate(cfg, "1jy15xne", "latest", "test")
     print("Validating Ligand only on test set")
-    validate(cfg, "21mnmh68", "v4", "test")
+    validate(cfg, "49nua94a", "latest", "test")
 
 
     print("Validating Ligand and Receptor on train set")
-    validate(cfg, "34ednh2q", "v4", "train")
+    validate(cfg, "1jy15xne", "latest", "train")
     print("Validating Ligand only on train set")
-    validate(cfg, "21mnmh68", "v4", "train")
+    validate(cfg, "49nua94a", "latest", "train")
 
 if __name__ == "__main__":
     cfg = get_config()

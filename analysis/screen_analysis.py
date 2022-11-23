@@ -13,7 +13,6 @@ def create_combined_df(csv_dict):
     return pd.concat(dfs)
 
 def make_figures(comb_df):
-    # sns.set_style("white")
     sns.set(font_scale=1.5, style='white')
     pcba_order = list(comb_df.query("dataset == 'LIT-PCBA' and model == 'BANANA'").sort_values(by="EF1%", ascending=False).target)
     bb_order = list(comb_df.query("dataset == 'BigBind' and model == 'BANANA'").sort_values(by="EF1%", ascending=False).target)
