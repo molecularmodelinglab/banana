@@ -8,11 +8,11 @@ In addition to pip installing the requirements, you'll need to install torch, dg
 
 ## Running with pretrained weights
 
-Once you've installed all the dependancies, you're ready to run the pretrained model. First create a PDB file for the pocket of the protein you want to target, then create a smi file will the SMILES strings of the compounds you want to screen. Now simply run `python inference.py compounds.smi pocket.pdb --out_file out_file.txt`. This will write all the scores of the compounds to `out_file.txt`. It will automatically download the pretrained weights to `data/` if they are not already there.
+Once you've installed all the dependancies, you're ready to run the pretrained model. First create a PDB file for the pocket of the protein you want to target, then create a smi file will the SMILES strings of the compounds you want to screen. Now simply run `python inference.py compounds.smi pocket.pdb --out_file out_file.txt`. This will load the pretrained weights from `data/banana_final.pt`, score each compound in `compounds.smi`, and write all the scores to `out_file.txt`.
 
 ## Training
 
-If you want to train the model yourself, first make sure you've downloaded the [BigBind dataset](https://drive.google.com/file/d/15D6kQZM0FQ2pgpMGJK-5P9T12ZRjBjXS/view?usp=sharing).
+If you want to train the model yourself, first make sure you've downloaded the [BigBind dataset](https://bigbind.mml.unc.edu/BigBindV1.tar.bz2).
 
 Now create a file `configs/local.yaml`. This contains all the configuration that should differ per-computer. Add in this information:
 ```yaml
