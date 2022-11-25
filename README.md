@@ -12,7 +12,7 @@ Once you've installed all the dependancies, you're ready to run the pretrained m
 
 ## Training
 
-If you want to train the model yourself, first make sure you've downloaded the [BigBind dataset](https://bigbind.mml.unc.edu/BigBindV1.tar.bz2).
+If you want to train the model yourself, first make sure you've downloaded the [BigBind dataset](https://storage.googleapis.com/bigbind/BigBindV1.tar.bz2).
 
 Now create a file `configs/local.yaml`. This contains all the configuration that should differ per-computer. Add in this information:
 ```yaml
