@@ -46,7 +46,7 @@ def get_screen_dataloader(cfg, dataset_name, target, split):
         "bigbind": get_bigbind_screen_dataloader,
     }[dataset_name](cfg, target, split)
 
-@cache(pred_key, disable=False)
+@cache(pred_key, disable=True)
 def get_screen_preds(cfg, model, dataset_name, target, split):
 
     if isinstance(model, ComboModel):
