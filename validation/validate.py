@@ -15,13 +15,16 @@ from common.cache import cache
 from common.losses import get_losses
 from common.plot_metrics import plot_metrics
 
-def pred_key(cfg, run, dataloader, tag, split):
+def pred_key(cfg, run, dataloader, tag, split, sna_override):
     return (old_model_key(cfg, run, tag), split)
 
-@cache(pred_key, disable=False)
-def get_preds(cfg, run, dataloader, tag, split):
+@cache(pred_key, disable=True)
+def get_preds(cfg, run, dataloader, tag, split, sna_override):
 
     cfg = get_run_config(run, cfg)
+    if sna_override is not None:
+        cfg.data.sna_frac = 1 if sna_override else None
+
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     model = get_old_model(cfg, run, tag).to(device)
     # model.eval()
@@ -31,16 +34,19 @@ def get_preds(cfg, run, dataloader, tag, split):
         for batch in tqdm(dataloader):
             pred = model(batch.to(device))
             preds.append(pred)
+            break
 
     return preds
 
-def metrics_key(cfg, run, tag, split):
-    return (old_model_key(cfg, run, tag), split)
+def metrics_key(cfg, run, tag, split, sna_override):
+    return (old_model_key(cfg, run, tag), split, sna_override)
 
 @cache(metrics_key, disable=True)
-def get_metric_values(cfg, run, tag, split):
+def get_metric_values(cfg, run, tag, split, sna_override=None):
 
     cfg = get_run_config(run, cfg)
+    if sna_override is not None:
+        cfg.data.sna_frac = 1 if sna_override else None
 
     loader = make_dataloader(cfg, split, force_no_shuffle=True)
 
@@ -81,7 +87,7 @@ def log_metrics(run, metrics, split):
         if not isinstance(val, torch.Tensor): continue
         print(f"{split}_{name}: {val}")
 
-def validate(cfg, run_id, tag, split, to_wandb=False):
+def validate(cfg, run_id, tag, split, to_wandb=False, sna_override=None):
 
     if to_wandb:
         run = wandb.init(project=cfg.project, id=run_id, resume=True)
@@ -90,7 +96,7 @@ def validate(cfg, run_id, tag, split, to_wandb=False):
         run = api.run(f"{cfg.project}/{run_id}")
     cfg = get_run_config(run, cfg)
 
-    metrics = get_metric_values(cfg, run, tag, split)
+    metrics = get_metric_values(cfg, run, tag, split, sna_override)
     log_metrics(run, metrics, split)
     return metrics
 

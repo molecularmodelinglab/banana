@@ -1,7 +1,9 @@
-import os
+from glob import glob
+import pandas as pd
 import random
 import torch
 from abc import ABC, abstractmethod
+from common.cache import cache
 # from meeko import PDBQTMolecule
 
 from datasets.bigbind_screen import BigBindScreenDataset
@@ -48,38 +50,49 @@ class OldModel(ValModel):
         self.model = self.model.to(device)
         return self
 
-class VinaModel(ValModel):
+# class VinaModel(ValModel):
 
-    def __init__(self, cfg):
-        self.dir = cfg.platform.bigbind_docked_dir
+#     def __init__(self, cfg):
+#         self.dir = cfg.platform.bigbind_docked_dir
 
-    def get_cache_key(self):
-        return "vina"
+#     def get_cache_key(self):
+#         return "vina"
 
-    def get_name(self):
-        return "vina"
+#     def get_name(self):
+#         return "vina"
 
-    def __call__(self, batch, dataset):
-        assert isinstance(dataset, BigBindScreenDataset)
-        ret = []
-        for index in batch.index:
-            pdbqt_file = f"{self.dir}/{dataset.split}_screens/{dataset.target}/{index}.pdbqt"
-            if os.path.exists(pdbqt_file):
-                ret.append(-PDBQTMolecule.from_file(pdbqt_file).score)
-            else:
-                ret.append(-100)
-        return torch.tensor(ret, dtype=torch.float32, device=batch.index.device)
+#     def __call__(self, batch, dataset):
+#         assert isinstance(dataset, BigBindScreenDataset)
+#         ret = []
+#         for index in batch.index:
+#             pdbqt_file = f"{self.dir}/{dataset.split}_screens/{dataset.target}/{index}.pdbqt"
+#             if os.path.exists(pdbqt_file):
+#                 ret.append(-PDBQTMolecule.from_file(pdbqt_file).score)
+#             else:
+#                 ret.append(-100)
+#         return torch.tensor(ret, dtype=torch.float32, device=batch.index.device)
+
+@cache(lambda cfg, target, dense: (target, dense))
+def get_gnina_bigbind_scores(cfg, target, dense):
+    dfs = {}
+    for file in glob(f"{cfg.platform.bigbind_gnina_dir}/protein_tars/{target}/*_results.csv"):
+        rec_pdb = file.split("/")[-1].split("_")[0]
+        dfs[rec_pdb] = pd.read_csv(file)
+
+    key = "cnn_affinity_dense" if dense else "cnn_affinity_default"
+
+    all_scores = [ torch.tensor(df[key], dtype=torch.float32) for df in dfs.values() ]
+    best_scores = torch.stack(all_scores).amax(0)
+    return best_scores
 
 class GninaModel(ValModel):
 
     def __init__(self, cfg, dense):
+        self.cfg = cfg
         self.pcba_scores = {}
         self.dense = dense
-        score_file = "./prior_work/lit-pcba_dense-CNNaffinity-mean-then-max.summary" if dense else "./prior_work/newdefault_CNNaffinity-max.summary"
-        with open(score_file) as f:
-            for line in f.readlines():
-                _, score, target, idx, _ = line.split()
-                self.pcba_scores[(target, int(idx))] = float(score)
+        self.pcba_scores = None
+        self.bigbind_scores = {}
 
     def get_cache_key(self):
         return "gnina_dense" if self.dense else "gnina"
@@ -88,7 +101,28 @@ class GninaModel(ValModel):
         return self.get_cache_key()
 
     def __call__(self, batch, dataset):
+
+        if isinstance(dataset, BigBindScreenDataset):
+            if dataset.target not in self.bigbind_scores:
+                best_scores = get_gnina_bigbind_scores(self.cfg, dataset.target, self.dense)
+                self.bigbind_scores[dataset.target] = best_scores
+            
+            scores = self.bigbind_scores[dataset.target]
+            ret = []
+            for index in batch.index:
+                ret.append(scores[index])
+            return torch.tensor(ret, dtype=torch.float32, device=batch.index.device)
+
         assert isinstance(dataset, LitPcbaDataset)
+
+        if self.pcba_scores is None:
+            self.pcba_scores = {}
+            score_file = "./prior_work/lit-pcba_dense-CNNaffinity-mean-then-max.summary" if self.dense else "./prior_work/newdefault_CNNaffinity-max.summary"
+            with open(score_file) as f:
+                for line in f.readlines():
+                    _, score, target, idx, _ = line.split()
+                    self.pcba_scores[(target, int(idx))] = float(score)
+
         ret = []
         for index in batch.index:
             key = (dataset.target, int(index))

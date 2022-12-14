@@ -11,7 +11,7 @@ import pandas as pd
 
 from terrace.batch import DataLoader
 
-from models.val_model import OldModel, VinaModel, GninaModel, ComboModel
+from models.val_model import OldModel, GninaModel, ComboModel
 from common.metrics import get_metrics
 from datasets.bigbind_screen import BigBindScreenDataset
 from datasets.lit_pcba import LitPcbaDataset
@@ -194,6 +194,12 @@ def screen(cfg, model, dataset_name, split):
     return df
 
 def get_run_val_model(cfg, run_id, tag):
+
+    if run_id == "gnina":
+        return GninaModel(cfg, False), cfg
+    elif run_id == "gnina_dense":
+        return GninaModel(cfg, True), cfg
+
     api = wandb.Api()
     run = api.run(f"{cfg.project}/{run_id}")
     cfg = get_run_config(run, cfg)
@@ -211,3 +217,6 @@ if __name__ == "__main__":
     tag = cfg.tag
     benchmark = cfg.benchmark
     data_split = "test" if cfg.benchmark == "lit_pcba" else cfg.data_split
+
+    model, cfg = get_run_val_model(cfg, run_id, tag)
+    screen(cfg, model, benchmark, data_split)
