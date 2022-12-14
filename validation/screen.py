@@ -98,7 +98,7 @@ def recur_to(item, device):
         assert isinstance(item, list)
         return [ recur_to(i, device) for i in item ]
     
-@cache(pred_key, disable=False)
+@cache(pred_key, disable=True)
 def get_screen_metric_values(cfg, model, dataset_name, target, split):
 
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -159,7 +159,7 @@ def log_metrics(metrics, target):
 def screen_key(cfg, model, dataset_name, split):
     return (model.get_cache_key(), dataset_name, split)
 
-@cache(screen_key, disable=False)
+@cache(screen_key, disable=True)
 def screen(cfg, model, dataset_name, split):
 
     all_targets = {
@@ -194,6 +194,15 @@ def screen(cfg, model, dataset_name, split):
     return df
 
 def get_run_val_model(cfg, run_id, tag):
+
+    # very hacky way to get combo and gnina models
+    # from command line args
+    if run_id.startswith("combo"):
+        _, run1, run2 = run_id.split("_")
+        model1, cfg = get_run_val_model(cfg, run1, tag)
+        model2, _ = get_run_val_model(cfg, run2, "")
+        model = ComboModel(model1, model2, 0.1)
+        return model, cfg
 
     if run_id == "gnina":
         return GninaModel(cfg, False), cfg
