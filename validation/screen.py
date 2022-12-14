@@ -198,7 +198,8 @@ def get_run_val_model(cfg, run_id, tag):
     # very hacky way to get combo and gnina models
     # from command line args
     if run_id.startswith("combo"):
-        _, run1, run2 = run_id.split("_")
+        _, run1, *rest = run_id.split("_")
+        run2 = "_".join(rest)
         model1, cfg = get_run_val_model(cfg, run1, tag)
         model2, _ = get_run_val_model(cfg, run2, "")
         model = ComboModel(model1, model2, 0.1)
