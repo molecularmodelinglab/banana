@@ -34,7 +34,6 @@ def get_preds(cfg, run, dataloader, tag, split, sna_override):
         for batch in tqdm(dataloader):
             pred = model(batch.to(device))
             preds.append(pred)
-            break
 
     return preds
 
