@@ -12,7 +12,7 @@ Once you've installed all the dependancies, you're ready to run the pretrained m
 
 ## Training
 
-If you want to train the model yourself, first make sure you've downloaded the [BigBind dataset](https://bigbind.mml.unc.edu/BigBindV1.tar.bz2).
+If you want to train the model yourself, first make sure you've downloaded the [BigBind dataset](https://storage.googleapis.com/bigbind/BigBindV1.tar.bz2).
 
 Now create a file `configs/local.yaml`. This contains all the configuration that should differ per-computer. Add in this information:
 ```yaml
@@ -32,7 +32,7 @@ platform:
 
 Now that you have this, train a model py running `python train.py config_name overrides`. The config name used in the BigBind paper is `classification`. This config is found in `configs/classification.yaml`. Feel free to make your own config. Anything in the config file can be overriden with command line arguments. For instance, train with a batch size of 2 with `python train.py classification batch_size=2`.
 
-If you have a Weights and Biases project and specificy it in the local config file, train will log all the weights and metrics.
+If you have a Weights and Biases project and specify it in the local config file, train will log all the weights and metrics.
 
 ## Validation
 
