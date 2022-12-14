@@ -16,8 +16,8 @@ def plot_many_rocs(ax, rocs, title):
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.set_aspect('equal', adjustable='box')
-    ax.set_title(title)
-    # ax.legend()
+    # ax.set_title(title)
+    ax.legend()
 
 def fake_validate(*args, **kwargs):
     return {
@@ -31,16 +31,7 @@ def fake_validate(*args, **kwargs):
 def make_roc_figs(cfg, tag, split):
     fig, axs = plt.subplots(2, 2)
 
-    run_ids = {
-        "Ligand and receptor": "37jstv82",
-        "Ligand only": "exp293if",
-    }
     for test_sna in [ False, True]:
-        rocs = {}
-        for name, run_id in run_ids.items():
-            print(f"Validating SNA {name}")
-            rocs[name] = fake_validate(cfg, run_id, tag, split, sna_override=test_sna)["roc"]
-        plot_many_rocs(axs[0][int(test_sna)], rocs, f"Train SNA, Test SNA {test_sna}")
 
         run_ids = {
             "Ligand and receptor": "1es4be17",
@@ -49,13 +40,38 @@ def make_roc_figs(cfg, tag, split):
         rocs = {}
         for name, run_id in run_ids.items():
             print(f"Validating Non-SNA {name}")
-            rocs[name] = fake_validate(cfg, run_id, tag, split, override=test_sna)["roc"]
-        plot_many_rocs(axs[1][int(test_sna)], rocs, f"Train without SNA, Test SNA {test_sna}")
+            rocs[name] = validate(cfg, run_id, tag, split, override=test_sna)["roc"]
+        plot_many_rocs(axs[0][int(test_sna)], rocs, f"Train without SNA, Test SNA {test_sna}")
+
+        run_ids = {
+            "Ligand and receptor": "37jstv82",
+            "Ligand only": "exp293if",
+        }
+        rocs = {}
+        for name, run_id in run_ids.items():
+            print(f"Validating SNA {name}")
+            rocs[name] = validate(cfg, run_id, tag, split, sna_override=test_sna)["roc"]
+        plot_many_rocs(axs[1][int(test_sna)], rocs, f"Train SNA, Test SNA {test_sna}")
+
+    pad = 5 # in points
+
+    rows = [ "Train without SNA", "Train with SNA"]
+    cols = [ "Test without SNA", "Test with SNA"]
+
+    for ax, col in zip(axs[0], cols):
+        ax.annotate(col, xy=(0.5, 1), xytext=(0, pad),
+                    xycoords='axes fraction', textcoords='offset points',
+                    size='large', ha='center', va='baseline')
+
+    for ax, row in zip(axs[:,0], rows):
+        ax.annotate(row, xy=(0, 0.5), xytext=(-ax.yaxis.labelpad - pad, 0),
+                    xycoords=ax.yaxis.label, textcoords='offset points',
+                    size='large', ha='right', va='center', rotation='vertical')
 
     fig.tight_layout()
+    fig.subplots_adjust(left=0.15)
     fig.set_size_inches(6, 6)
-    fig.suptitle("With SNA")
-    fig.legend(["Ligand and Receptor", "Ligand Only"])
+    # fig.legend(["Ligand and Receptor", "Ligand Only"])
     fig.savefig("./outputs/roc.pdf", dpi=300)
 
 if __name__ == "__main__":
