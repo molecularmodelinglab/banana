@@ -51,7 +51,7 @@ def get_metric_values(cfg, run, tag, split, sna_override=None):
     loader = make_dataloader(cfg, split, force_no_shuffle=True)
 
     print("Getting predictions")
-    preds = get_preds(cfg, run, loader, tag, split)
+    preds = get_preds(cfg, run, loader, tag, split, sna_override)
 
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 

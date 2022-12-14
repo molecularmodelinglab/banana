@@ -40,7 +40,7 @@ def make_roc_figs(cfg, tag, split):
         rocs = {}
         for name, run_id in run_ids.items():
             print(f"Validating Non-SNA {name}")
-            rocs[name] = validate(cfg, run_id, tag, split, override=test_sna)["roc"]
+            rocs[name] = validate(cfg, run_id, tag, split, sna_override=test_sna)["roc"]
         plot_many_rocs(axs[0][int(test_sna)], rocs, f"Train without SNA, Test SNA {test_sna}")
 
         run_ids = {
