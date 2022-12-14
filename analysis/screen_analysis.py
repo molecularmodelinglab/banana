@@ -65,7 +65,11 @@ if __name__ == "__main__":
         ("LIT-PCBA", "BANANA"): "screen_lit_pcba_test_37jstv82_v4.csv",
         ("LIT-PCBA", "BANANA+GNINA (default)"): "screen_lit_pcba_test_combo_37jstv82_v4_gnina_0.1.csv",
         ("LIT-PCBA", "BANANA+GNINA (dense)"): "screen_lit_pcba_test_combo_37jstv82_v4_gnina_dense_0.1.csv",
-        ("BigBind", "BANANA"): "screen_bigbind_test_37jstv82_v4.csv"
+        ("BigBind", "BANANA"): "screen_bigbind_test_37jstv82_v4.csv",
+        ("BigBind", "GNINA (default)"): "screen_bigbind_test_gnina.csv",
+        ("BigBind", "GNINA (dense)"): "screen_bigbind_test_gnina_dense.csv",
+        ("BigBind", "BANANA+GNINA (default)"): "screen_bigbind_test_combo_37jstv82_v4_gnina_0.1.csv",
+        ("BigBind", "BANANA+GNINA (dense)"): "screen_bigbind_test_combo_37jstv82_v4_gnina_dense_0.1.csv",
     }
     comb_df = create_combined_df(csv_dict)
     make_figures(comb_df)
