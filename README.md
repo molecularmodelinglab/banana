@@ -1,6 +1,6 @@
 # BANANA
 
-Implimentation od BANANA (BAsic NeurAl Network for binding Affinity), as described in the [BigBind paper](https://chemrxiv.org/engage/chemrxiv/article-details/6384ad70c5675357f89943c5).
+Implimentation of BANANA (BAsic NeurAl Network for binding Affinity), as described in the [BigBind paper](https://chemrxiv.org/engage/chemrxiv/article-details/6384ad70c5675357f89943c5).
 
 ## Dependencies
 
