@@ -14,5 +14,5 @@ sympy
 torchmetrics
 git-timewarp
 seaborn
-terrace
+terrace==0.0.6
 argparse
