@@ -18,3 +18,7 @@ outputs/*
 prior_work
 notebooks
 .vscode
+*.out
+*.err
+*.txt
+*.pdb
