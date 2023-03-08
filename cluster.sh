@@ -3,8 +3,8 @@
 #SBATCH -t 1-00:00:00
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=16G
-#SBATCH --output=infer-%x.%j.out
-#SBATCH --error=infer-%x.%j.err
+#SBATCH --output=cluster-%x.%j.out
+#SBATCH --error=cluster-%x.%j.err
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
