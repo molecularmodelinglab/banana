@@ -113,7 +113,7 @@ def main(cutoff=0.7, num_threads=32, radius=4, bits=256):
 
     all_clusters = parellel_cluster(fps, cutoff, num_threads)
     new_df = cluster_hits(df, all_clusters)
-    new_df.to_csv(f"clustered_hits_{radius}_{bits}.csv", index=False)
+    new_df.to_csv(f"clustered_hits_{radius}_{bits}_{cutoff}.csv", index=False)
 
 if __name__ == "__main__":
     main()
