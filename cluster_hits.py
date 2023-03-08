@@ -111,7 +111,7 @@ def main(cutoff=0.7, num_threads=32):
         with open(fp_file, "wb") as f:
             pickle.dump(fps, f)
 
-    all_clusters = parellel_cluster(fps[:50000], cutoff, num_threads)
+    all_clusters = parellel_cluster(fps, cutoff, num_threads)
     new_df = cluster_hits(df, all_clusters)
     new_df.to_csv("clustered_hits.csv", index=False)
 
