@@ -93,10 +93,10 @@ def cluster_hits(df, clusters):
     new_df = pd.DataFrame(rows)
     return new_df.sort_values("score", ascending=False).reset_index(drop=True) 
 
-def main(cutoff=0.7, num_threads=32):
+def main(cutoff=0.7, num_threads=32, radius=4, bits=256):
     df = pd.read_csv("all_hits.csv")
 
-    fp_file = "hit_fingerprints.pkl"
+    fp_file = f"hit_fingerprints_{radius}_{bits}.pkl"
 
     if os.path.exists(fp_file):
         with open(fp_file, "rb") as f:
@@ -105,7 +105,7 @@ def main(cutoff=0.7, num_threads=32):
         fps = []
         for smi in tqdm(df.smiles):
             mol = Chem.MolFromSmiles(smi)
-            fp = AllChem.GetMorganFingerprintAsBitVect(mol, useChirality=True, radius=2, nBits=124)
+            fp = AllChem.GetMorganFingerprintAsBitVect(mol, useChirality=True, radius=radius, nBits=bits)
             fps.append(np.array(fp, dtype=bool))
         fps = np.asarray(fps)
         with open(fp_file, "wb") as f:
