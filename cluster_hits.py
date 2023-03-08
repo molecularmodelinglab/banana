@@ -93,7 +93,7 @@ def cluster_hits(df, clusters):
     new_df = pd.DataFrame(rows)
     return new_df.sort_values("score", ascending=False).reset_index(drop=True) 
 
-def main(cutoff=0.7, num_threads=16):
+def main(cutoff=0.7, num_threads=32):
     df = pd.read_csv("all_hits.csv")
 
     fp_file = "hit_fingerprints.pkl"

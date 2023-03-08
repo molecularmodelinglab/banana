@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -J infer
+#SBATCH -J cluster
 #SBATCH -t 1-00:00:00
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=2G
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=16G
 #SBATCH --output=infer-%x.%j.out
 #SBATCH --error=infer-%x.%j.err
 
@@ -25,4 +25,4 @@ conda activate banana
 
 cd /nas/longleaf/home/mixarcid/banana
 
-python infer_nsp3.py $@
+python cluster_hits.py $@
