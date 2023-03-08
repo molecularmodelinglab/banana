@@ -22,3 +22,5 @@ notebooks
 *.err
 *.txt
 *.pdb
+*.csv
+*.pkl
