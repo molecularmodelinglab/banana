@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import os
 import torch
 import sys
 from omegaconf import OmegaConf
@@ -27,10 +28,14 @@ def inference():
     model = model.to(device)
     model.eval()
 
-    index = int(sys.argv[1])
-    csv_file = glob("/work/users/m/i/mixarcid/44M_diversity_set.csv_*")[index]
-    out_file = f"out_{index}.txt"
-    pdb_file = "nsp3_pocket.pdb"
+    pdb_file = sys.argv[1]
+    index = int(sys.argv[2])
+    csv_file = glob("/proj/kpoplab/Enamine/44M_diversity_set.csv_*")[index]
+
+    out_folder = "screen_outputs"
+    os.makedirs(out_folder, exist_ok=True)
+
+    out_file = f"{out_folder}_{pdb_file}_{index}.txt"
 
     print(f"Running inference on {csv_file}. Outputting to {out_file}")
 

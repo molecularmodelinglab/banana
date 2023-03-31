@@ -25,4 +25,4 @@ conda activate banana
 
 cd /nas/longleaf/home/mixarcid/banana
 
-python infer_nsp3.py $@
+python prod_screen.py $@
