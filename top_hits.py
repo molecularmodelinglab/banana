@@ -4,7 +4,7 @@ from tqdm import trange
 
 pocket_file = sys.argv[1]
 prefix = pocket_file.split(".")[0]
-out_filename = f"screen_outputs/{prefix}_scores.csv"
+out_filename = f"/proj/kpoplab/banana_outputs/{prefix}_scores.csv"
 
 out_csv = open(out_filename, "w")
 out_csv.write("smiles,idnumber,score\n")
@@ -18,7 +18,7 @@ for i in trange(800):
             if i == 0:
                 next(smi)
             for line, smi_line in zip(f, smi):
-                compound, idnum = smi_line.strip().split(",")[0]
+                compound, idnum = smi_line.strip().split(",")
                 score, valid = line.split(",")
                 if valid:
                     scores.append(score)
@@ -28,5 +28,5 @@ out_csv.close()
 df = pd.read_csv(out_filename)
 df = df.query("score > 0.0")
 df = df.sort_values(by="score", ascending=False)
-df.to_csv(f"screen_outputs/{prefix}_hits.csv", index=False)
-df.head(1000000).to_csv(f"screen_outputs/{prefix}_1M_top_hits.csv", index=False)
+df.to_csv(f"/proj/kpoplab/banana_outputs/{prefix}_hits.csv", index=False)
+df.head(1000000).to_csv(f"/proj/kpoplab/banana_outputs/{prefix}_1M_top_hits.csv", index=False)
