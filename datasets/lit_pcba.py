@@ -14,6 +14,10 @@ class LitPcbaDataset(CacheableDataset):
         folders = glob(cfg.platform.lit_pcba_dir + "/*")
         return [ folder.split("/")[-1] for folder in folders if os.path.isdir(folder) ]
 
+    @staticmethod
+    def get_pocket_file(cfg, target):
+        return glob(cfg.platform.lit_pcba_dir + "/" + target + "/*_pocket.pdb")[0]
+
     def __init__(self, cfg, target):
         name = "lit_pcba_" + target
         super().__init__(cfg, name)
@@ -32,7 +36,7 @@ class LitPcbaDataset(CacheableDataset):
             pcba_idx = int(pcba_idx)
             self.items.append((smi, active, pcba_idx))
 
-        poc_file = glob(self.dir + "/*_pocket.pdb")[0]
+        poc_file = LitPcbaDataset.get_pocket_file(self.cfg, self.target)
         self.prot_graph = prot_graph_from_pdb(cfg, poc_file)
 
     def __len__(self):
