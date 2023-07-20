@@ -32,7 +32,7 @@ platform:
 
 ```
 
-Now that you have this, train a model py running `python train.py config_name overrides`. The config name used in the BigBind paper is `classification`. This config is found in `configs/classification.yaml`. Feel free to make your own config. Anything in the config file can be overriden with command line arguments. For instance, train with a batch size of 2 with `python train.py classification batch_size=2`.
+Now that you have this, train a model py running `python train.py config_name overrides`. The config name used in the BigBind paper is `classification`. This config is found in `configs/classification.yaml`. Feel free to make your own config. Anything in the config file can be overwritten with command line arguments. For instance, train with a batch size of 2 with `python train.py classification batch_size=2`.
 
 If you have a Weights and Biases project and specify it in the local config file, the training script will log all the weights and metrics.
 
