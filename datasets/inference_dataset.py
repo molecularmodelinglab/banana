@@ -25,8 +25,15 @@ class InferenceDataset(data.Dataset):
         if index >= len(self):
             raise StopIteration
 
+        is_valid = True
         mol = Chem.MolFromSmiles(self.smiles[index])
+        if mol is None:
+            print(f"Failed to load smiles '{self.smiles[index]}', skipping...")
+            mol = Chem.MolFromSmiles("CCCC")
+            is_valid = False
+
         lig_graph = MolGraph(self.cfg, mol, use_3d=False)
-        is_active = torch.tensor(False, dtype=bool)
+        # hacky -- use the activity column to specify molecule validity
+        is_active = torch.tensor(is_valid, dtype=bool)
 
         return IsActiveData(lig_graph, self.prot_graph, is_active)

@@ -43,7 +43,10 @@ def inference():
         for batch in tqdm(dataloader):
             batch = batch.to(device)
             output = model(batch).cpu().numpy()
-            for out in output:
+            for x, out in zip(batch, output):
+                # if the molecule failed to load, give it a -100 score
+                if not x.is_active:
+                    out = -100
                 f.write(f"{out}\n")
 
 if __name__ == "__main__":

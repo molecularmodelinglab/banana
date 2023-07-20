@@ -10,6 +10,8 @@ In addition to pip installing the requirements, you'll need to install torch, dg
 
 Once you've installed all the dependencies, you're ready to run the pretrained model. First, create a PDB file containing the pocket residues of your target protein. Then create a smi file with the SMILES strings of the compounds you want to screen (one smiles string per line). Now simply run `python inference.py compounds.smi pocket.pdb --out_file out_file.txt`. This will load the pretrained weights from `data/banana_final.pt`, score each compound in `compounds.smi`, and write all the scores to `out_file.txt`.
 
+If the inference script fails to load any smiles in the dataset, it will output -100 for the BANANA score.
+
 ## Training
 
 If you want to train the model yourself, first make sure you've downloaded the [BigBind dataset](https://storage.googleapis.com/bigbind/BigBindV1.tar.bz2).
