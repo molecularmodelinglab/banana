@@ -50,7 +50,9 @@ class BigBindActDataset(BigBindDataset):
         rec_file = self.get_rec_file(index)
 
         try:
-            lig_graph = mol_graph_from_sdf(self.cfg, lig_file)
+            # lig_graph = mol_graph_from_sdf(self.cfg, lig_file)
+            mol = Chem.MolFromSmiles(self.activities.lig_smiles[index])
+            lig_graph = MolGraph(self.cfg, mol, use_3d=False)
             rec_graph = prot_graph_from_pdb(self.cfg, rec_file)
         except:
             print(f"Error proccessing item at {index=}")
