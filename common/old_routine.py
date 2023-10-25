@@ -21,6 +21,8 @@ def get_old_routine(cfg, run, tag="latest"):
     return routine
 
 def old_model_key(cfg, run, tag):
+    if run == "KNN":
+        return "KNN"
     artifact = get_weight_artifact(run, tag)
     return (run.id, artifact.version)
 

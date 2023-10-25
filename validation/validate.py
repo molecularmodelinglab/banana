@@ -21,11 +21,28 @@ def pred_key(cfg, run, dataloader, tag, split, sna_override):
 @cache(pred_key, disable=True)
 def get_preds(cfg, run, dataloader, tag, split, sna_override):
 
-    cfg = get_run_config(run, cfg)
+    # cfg = get_run_config(run, cfg)
     if sna_override is not None:
         cfg.data.sna_frac = 1 if sna_override else None
 
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+
+    if run == "KNN":
+        preds = []
+        cur_batch = []
+        if cfg.data.sna_frac is None:
+            fname = f"data/knn_preds_{split}.txt"
+        else:
+            fname = f"data/knn_preds_sna_{cfg.data.sna_frac}_{split}.txt"
+        with open(fname, "r") as f:
+            for line in f:
+                cur_batch.append(float(line))
+                if len(cur_batch) == cfg.batch_size:
+                    preds.append(torch.asarray(cur_batch).to(device))
+                    cur_batch = []    
+        preds.append(torch.asarray(cur_batch).to(device))
+        return preds
+
     model = get_old_model(cfg, run, tag).to(device)
     # model.eval()
     
@@ -43,7 +60,7 @@ def metrics_key(cfg, run, tag, split, sna_override):
 @cache(metrics_key, disable=True)
 def get_metric_values(cfg, run, tag, split, sna_override=None):
 
-    cfg = get_run_config(run, cfg)
+    # cfg = get_run_config(run, cfg)
     if sna_override is not None:
         cfg.data.sna_frac = 1 if sna_override else None
 
@@ -90,10 +107,14 @@ def validate(cfg, run_id, tag, split, to_wandb=False, sna_override=None):
 
     if to_wandb:
         run = wandb.init(project=cfg.project, id=run_id, resume=True)
+        cfg = get_run_config(run, cfg)
     else:
-        api = wandb.Api()
-        run = api.run(f"{cfg.project}/{run_id}")
-    cfg = get_run_config(run, cfg)
+        if run_id == "KNN":
+            run = "KNN"
+        else:
+            api = wandb.Api()
+            run = api.run(f"{cfg.project}/{run_id}")
+            cfg = get_run_config(run, cfg)
 
     metrics = get_metric_values(cfg, run, tag, split, sna_override)
     log_metrics(run, metrics, split)
@@ -103,4 +124,6 @@ if __name__ == "__main__":
     # run_id, tag, and data_split are all command line args
     # todo: this is a pretty hacky way of getting command line args
     cfg = get_config()
+    if cfg.run_id == "KNN":
+        cfg["tag"] = None
     validate(cfg, cfg.run_id, cfg.tag, cfg.data_split)
