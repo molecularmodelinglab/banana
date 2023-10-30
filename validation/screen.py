@@ -11,7 +11,7 @@ import pandas as pd
 
 from terrace.batch import DataLoader
 
-from models.val_model import OldModel, GninaModel, ComboModel
+from models.val_model import DenvisModel, OldModel, GninaModel, ComboModel
 from common.metrics import get_metrics
 from datasets.bigbind_screen import BigBindScreenDataset
 from datasets.lit_pcba import LitPcbaDataset
@@ -209,6 +209,8 @@ def get_run_val_model(cfg, run_id, tag):
         return GninaModel(cfg, False), cfg
     elif run_id == "gnina_dense":
         return GninaModel(cfg, True), cfg
+    elif run_id == "denvis":
+        return DenvisModel(cfg), cfg
 
     api = wandb.Api()
     run = api.run(f"{cfg.project}/{run_id}")

@@ -1,6 +1,9 @@
+from collections import defaultdict
 from glob import glob
 import pandas as pd
 import random
+
+from tqdm import tqdm
 import torch
 from abc import ABC, abstractmethod
 from common.cache import cache
@@ -89,7 +92,6 @@ class GninaModel(ValModel):
 
     def __init__(self, cfg, dense):
         self.cfg = cfg
-        self.pcba_scores = {}
         self.dense = dense
         self.pcba_scores = None
         self.bigbind_scores = {}
@@ -131,6 +133,52 @@ class GninaModel(ValModel):
             else:
                 ret.append(-100)
         return torch.tensor(ret, dtype=torch.float32, device=batch.index.device)
+
+@cache(lambda cfg: "", disable=False)
+def get_denvis_pcba_scores(cfg):
+    df = pd.read_parquet(cfg.platform.denvis_output_dir + "/litpcba_main_general_surface.parquet")
+
+    df["y_score"] = 0.5*df.y_score_Kd + 0.5*df.y_score_Ki + 0.5*df.y_score_IC50
+
+    pcba_scores = defaultdict(list)
+    for full_target, ligand_id, score in zip(tqdm(df.target_id), df.ligand_id, df.y_score):
+        target, pdb = full_target.split("#")
+        key = (target, int(ligand_id))
+        pcba_scores[key].append(score)
+    
+    pcba_scores = { key: torch.tensor(scores, dtype=torch.float32) for key, scores in pcba_scores.items() }
+
+    return pcba_scores
+
+class DenvisModel(ValModel):
+
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self.pcba_scores = None
+        self.bigbind_scores = {}
+
+    def get_cache_key(self):
+        return "denvis"
+
+    def get_name(self):
+        return self.get_cache_key()
+
+    def __call__(self, batch, dataset):
+
+        assert isinstance(dataset, LitPcbaDataset)
+
+        if self.pcba_scores is None: 
+            self.pcba_scores = get_denvis_pcba_scores(self.cfg)
+
+        ret = []
+        for index in batch.index:
+            key = (dataset.target, int(index))
+            if key in self.pcba_scores:
+                ret.append(-torch.median(self.pcba_scores[key]))
+            else:
+                ret.append(-100)
+        return torch.tensor(ret, dtype=torch.float32, device=batch.index.device)
+
 
 class ComboModel(ValModel):
 
