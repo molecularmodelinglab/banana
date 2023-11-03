@@ -1,14 +1,14 @@
 import pandas as pd
 import seaborn as sns
 
+MODEL_ORDER = [ 'BANANA', "DENVIS", 'Vina', 'GNINA (default)', 'GNINA (dense)', "DENVIS+GNINA (default)", "DENVIS+GNINA (dense)", "BANANA+GNINA (default)", "BANANA+GNINA (dense)" ]
+
 def create_combined_df(csv_dict):
     dfs = []
     for (dataset, model), csv in csv_dict.items():
         df = pd.read_csv("outputs/" + csv)
         df["model"] = model
         df["dataset"] = dataset
-        if dataset == "BigBind":
-            df = df[df["total actives in set"] >= 1].reset_index(drop=True)
         dfs.append(df)
     return pd.concat(dfs)
 
@@ -20,7 +20,7 @@ def make_figures(comb_df):
     g = sns.catplot(x="target", y="EF1%", hue="model",# col="dataset",
                     data=comb_df,
                     order=pcba_order,
-                    hue_order = [ 'BANANA', 'GNINA (default)', 'GNINA (dense)', "BANANA+GNINA (default)", "BANANA+GNINA (dense)" ],
+                    hue_order = MODEL_ORDER,
                     # sharex = False,
                     aspect=2,
                     kind='bar')
@@ -34,10 +34,10 @@ def make_figures(comb_df):
 def make_results_csv(comb_df):
     med_rows = []
     mean_rows = []
-    for model in ["BANANA", "GNINA (default)", "GNINA (dense)", "BANANA+GNINA (default)", "BANANA+GNINA (dense)"]:
+    for model in MODEL_ORDER:
         med_row = { "model": model }
         mean_row = { "model": model }
-        for dataset in [ "BigBind", "LIT-PCBA" ]:
+        for dataset in [ "LIT-PCBA" ]:
             for metric in [ "EF1%", "NEF1%", "auroc" ]:
                 key = (dataset + metric)
                 for c in "+-1%":
@@ -53,8 +53,8 @@ def make_results_csv(comb_df):
     mean_df = pd.DataFrame(mean_rows)
     mean_df.to_csv("./outputs/mean_results.csv")
 
-    for model in ["BANANA", "BANANA+GNINA (default)", "BANANA+GNINA (dense)", "GNINA (default)", "GNINA (dense)"]:
-        for dataset in [ "BigBind", "LIT-PCBA" ]:
+    for model in MODEL_ORDER:
+        for dataset in [ "LIT-PCBA" ]:
             dataset_df = comb_df.query("dataset == @dataset and model == @model").rename(columns = { "EF1%": "ef", "NEF1%": "nef"})
             dataset_df.to_csv(f"./outputs/{dataset}_{model}_results.csv", float_format='%.2f')
 
@@ -62,16 +62,16 @@ if __name__ == "__main__":
     csv_dict = {
         ("LIT-PCBA", "GNINA (default)"): "screen_lit_pcba_test_gnina.csv",
         ("LIT-PCBA", "GNINA (dense)"): "screen_lit_pcba_test_gnina_dense.csv", # "../prior_work/dense.csv",
-        ("LIT-PCBA", "BANANA"): "screen_lit_pcba_test_37jstv82_v4.csv",
-        ("LIT-PCBA", "BANANA+GNINA (default)"): "screen_lit_pcba_test_combo_37jstv82_v4_gnina_0.1.csv",
-        ("LIT-PCBA", "BANANA+GNINA (dense)"): "screen_lit_pcba_test_combo_37jstv82_v4_gnina_dense_0.1.csv",
-        ("BigBind", "BANANA"): "screen_bigbind_test_37jstv82_v4.csv",
-        ("BigBind", "GNINA (default)"): "screen_bigbind_test_gnina.csv",
-        ("BigBind", "GNINA (dense)"): "screen_bigbind_test_gnina_dense.csv",
-        ("BigBind", "BANANA+GNINA (default)"): "screen_bigbind_test_combo_37jstv82_v4_gnina_0.1.csv",
-        ("BigBind", "BANANA+GNINA (dense)"): "screen_bigbind_test_combo_37jstv82_v4_gnina_dense_0.1.csv",
+        ("LIT-PCBA", "BANANA"): "screen_lit_pcba_test_f9abt5bk_v4.csv",
+        ("LIT-PCBA", "Vina"): "../prior_work/vina.csv",
+        ("LIT-PCBA", "BANANA+GNINA (default)"): "screen_lit_pcba_test_combo_f9abt5bk_v4_gnina_0.1.csv",
+        ("LIT-PCBA", "BANANA+GNINA (dense)"): "screen_lit_pcba_test_combo_f9abt5bk_v4_gnina_dense_0.1.csv",
+        # ("LIT-PCBA", "DENVIS+GNINA (default)"): "screen_lit_pcba_test_combo_denvis_gnina_0.1.csv",
+        # ("LIT-PCBA", "DENVIS+GNINA (dense)"): "screen_lit_pcba_test_combo_denvis_gnina_dense_0.1.csv",
+        # ("LIT-PCBA", "DENVIS"): "screen_lit_pcba_test_denvis.csv",
     }
     comb_df = create_combined_df(csv_dict)
+    print(comb_df)
     make_figures(comb_df)
     make_results_csv(comb_df)
 

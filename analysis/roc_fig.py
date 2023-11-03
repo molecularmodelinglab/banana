@@ -35,8 +35,8 @@ def make_roc_figs(cfg, tag, split):
     for test_sna in [ False, True]:
 
         run_ids = {
-            "Full model": "1es4be17",
-            "Ligand only": "1qwd5qn6",
+            "Full model": "ei8q4qpd",
+            "Ligand only": "las91xkd",
         }
         rocs = {}
         aucs = {}
@@ -48,8 +48,8 @@ def make_roc_figs(cfg, tag, split):
         plot_many_rocs(axs[0][int(test_sna)], rocs, aucs, f"Train without SNA, Test SNA {test_sna}")
 
         run_ids = {
-            "Full model": "37jstv82",
-            "Ligand only": "exp293if",
+            "Full model": "f9abt5bk",
+            "Ligand only": "nkxhqcgu",
         }
         rocs = {}
         aucs = {}
