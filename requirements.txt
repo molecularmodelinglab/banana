@@ -1,4 +1,4 @@
-awandb
+wandb
 biopandas
 joblib
 numpy
