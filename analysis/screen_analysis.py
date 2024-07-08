@@ -1,7 +1,9 @@
 import pandas as pd
 import seaborn as sns
 
-MODEL_ORDER = [ 'BANANA', "DENVIS", 'Vina', 'GNINA (default)', 'GNINA (dense)', "DENVIS+GNINA (default)", "DENVIS+GNINA (dense)", "BANANA+GNINA (default)", "BANANA+GNINA (dense)" ]
+# MODEL_ORDER = [ 'BANANA', "DENVIS", 'Vina', 'GNINA (default)', 'GNINA (dense)', "DENVIS+GNINA (default)", "DENVIS+GNINA (dense)", "BANANA+GNINA (default)", "BANANA+GNINA (dense)" ]
+MODEL_ORDER = [ 'BANANA', 'Vina', 'GNINA (default)', 'GNINA (dense)', "BANANA+GNINA (default)", "BANANA+GNINA (dense)" ]
+
 
 def create_combined_df(csv_dict):
     dfs = []

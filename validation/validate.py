@@ -16,7 +16,7 @@ from common.losses import get_losses
 from common.plot_metrics import plot_metrics
 
 def pred_key(cfg, run, dataloader, tag, split, sna_override):
-    return (old_model_key(cfg, run, tag), split)
+    return (old_model_key(cfg, run, tag), split, sna_override)
 
 @cache(pred_key, disable=False)
 def get_preds(cfg, run, dataloader, tag, split, sna_override):
@@ -80,6 +80,7 @@ def get_metric_values(cfg, run, tag, split, sna_override=None):
     print("Getting metrics")
     n_batches = None
     for i, (batch, pred) in enumerate(zip(loader, tqdm(preds))):
+        # print(len(batch), len(pred), batch.is_active.shape, pred.shape)
         pred = pred.to(device)
         batch = batch.to(device)
         for met in metrics.values():
