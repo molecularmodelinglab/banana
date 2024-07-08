@@ -33,6 +33,7 @@ class InferenceDataset(data.Dataset):
         except:
             print(f"Failed to load smiles '{self.smiles[index]}', skipping...")
             mol = Chem.MolFromSmiles("CCCC")
+            lig_graph = MolGraph(self.cfg, mol, use_3d=False)
             is_valid = False
         
         # hacky -- use the activity column to specify molecule validity
