@@ -1,4 +1,3 @@
-
 import torch
 from torch.utils import data
 from rdkit import Chem
@@ -26,13 +25,16 @@ class InferenceDataset(data.Dataset):
             raise StopIteration
 
         is_valid = True
-        mol = Chem.MolFromSmiles(self.smiles[index])
-        if mol is None:
+        try:
+            mol = Chem.MolFromSmiles(self.smiles[index])
+            lig_graph = MolGraph(self.cfg, mol, use_3d=False)
+        except KeyboardInterrupt:
+            raise
+        except:
             print(f"Failed to load smiles '{self.smiles[index]}', skipping...")
             mol = Chem.MolFromSmiles("CCCC")
             is_valid = False
-
-        lig_graph = MolGraph(self.cfg, mol, use_3d=False)
+        
         # hacky -- use the activity column to specify molecule validity
         is_active = torch.tensor(is_valid, dtype=bool)
 
